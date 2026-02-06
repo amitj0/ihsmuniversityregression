@@ -71,7 +71,9 @@ TEST TYPE : ${params.TEST_TYPE}
         }
 
         stage('🧹 CLEAN WORKSPACE') {
-            steps { deleteDir() }
+            steps {
+                deleteDir()
+            }
         }
 
         stage('📥 CHECKOUT CODE') {
@@ -117,80 +119,69 @@ TEST TYPE : ${params.TEST_TYPE}
      ***********************/
     post {
 
-    always {
-        junit 'target/surefire-reports/*.xml'
-        archiveArtifacts artifacts: 'reports/*.html', allowEmptyArchive: true
-    }
+        always {
+            junit 'target/surefire-reports/*.xml'
+            archiveArtifacts artifacts: 'reports/*.html', allowEmptyArchive: true
+        }
 
-    success {
-        emailext(
-<<<<<<< HEAD
-            to: 'ajangra@ismedusoftsol.com',
-=======
-            to: 'ajangra@ismedusoftsol.com,jchhillar@ismedusoftsol.com,ankur@ismedusoftsol.com,amit@ismedusoftsol.com,vpahwa@ismedusoftsol.com',
->>>>>>> 53198b4e7de0c252d601a97ead61b5abd3a6483f
-            subject: "✅ ${PROJECT} | SUCCESS | Build #${BUILD_NUMBER}",
-            mimeType: 'text/html',
+        success {
+            emailext(
+                to: 'ajangra@ismedusoftsol.com',
+                subject: "✅ ${PROJECT} | SUCCESS | Build #${BUILD_NUMBER}",
+                mimeType: 'text/html',
+                attachLog: true,
+                attachmentsPattern: 'reports/*.html',
 
-            attachLog: true,
-            attachmentsPattern: 'reports/*.html',
+                body: """
+                <h2 style="color:green;">Execution Successful</h2>
 
-            body: """
-            <h2 style="color:green;">Execution Successful</h2>
+                <p><b>Project:</b> ${PROJECT}</p>
+                <p><b>Environment:</b> ${params.ENV}</p>
+                <p><b>Browser:</b> ${params.BROWSER}</p>
+                <p><b>Suite:</b> ${params.TEST_TYPE}</p>
 
-            <p><b>Project:</b> ${PROJECT}</p>
-            <p><b>Environment:</b> ${params.ENV}</p>
-            <p><b>Browser:</b> ${params.BROWSER}</p>
-            <p><b>Suite:</b> ${params.TEST_TYPE}</p>
+                <p>
+                  <a href="${BUILD_URL}">🔗 Open Jenkins Build</a><br>
+                  <a href="${BUILD_URL}HTML_20Report/">📊 Open Extent Report</a>
+                </p>
 
-            <p>
-              <a href="${BUILD_URL}">🔗 Open Jenkins Build</a><br>
-              <a href="${BUILD_URL}HTML_20Report/">📊 Open Extent Report</a>
-            </p>
+                <p><b>Attachments:</b></p>
+                <ul>
+                  <li>Console Log</li>
+                  <li>Extent HTML Report</li>
+                </ul>
+                """
+            )
+        }
 
-            <p><b>Attachments:</b></p>
-            <ul>
-              <li>Console Log</li>
-              <li>Extent HTML Report</li>
-            </ul>
-            """
-        )
-    }
+        failure {
+            emailext(
+                to: 'ajangra@ismedusoftsol.com',
+                subject: "❌ ${PROJECT} | FAILED | Build #${BUILD_NUMBER}",
+                mimeType: 'text/html',
+                attachLog: true,
+                attachmentsPattern: 'reports/*.html',
 
-    failure {
-        emailext(
-<<<<<<< HEAD
-            to: 'ajangra@ismedusoftsol.com',
-=======
-            to: 'ajangra@ismedusoftsol.com,jchhillar@ismedusoftsol.com,ankur@ismedusoftsol.com,amit@ismedusoftsol.com,vpahwa@ismedusoftsol.com',
->>>>>>> 53198b4e7de0c252d601a97ead61b5abd3a6483f
-            subject: "❌ ${PROJECT} | FAILED | Build #${BUILD_NUMBER}",
-            mimeType: 'text/html',
+                body: """
+                <h2 style="color:red;">Execution Failed</h2>
 
-            attachLog: true,
-            attachmentsPattern: 'reports/*.html',
+                <p><b>Project:</b> ${PROJECT}</p>
+                <p><b>Environment:</b> ${params.ENV}</p>
+                <p><b>Browser:</b> ${params.BROWSER}</p>
+                <p><b>Suite:</b> ${params.TEST_TYPE}</p>
 
-            body: """
-            <h2 style="color:red;">Execution Failed</h2>
+                <p>
+                  <a href="${BUILD_URL}">🔗 Open Jenkins Build</a><br>
+                  <a href="${BUILD_URL}HTML_20Report/">📊 Open Extent Report</a>
+                </p>
 
-            <p><b>Project:</b> ${PROJECT}</p>
-            <p><b>Environment:</b> ${params.ENV}</p>
-            <p><b>Browser:</b> ${params.BROWSER}</p>
-            <p><b>Suite:</b> ${params.TEST_TYPE}</p>
-
-            <p>
-              <a href="${BUILD_URL}">🔗 Open Jenkins Build</a><br>
-              <a href="${BUILD_URL}HTML_20Report/">📊 Open Extent Report</a>
-            </p>
-
-            <p><b>Attachments:</b></p>
-            <ul>
-              <li>Console Log</li>
-              <li>Extent HTML Report</li>
-            </ul>
-            """
-        )
+                <p><b>Attachments:</b></p>
+                <ul>
+                  <li>Console Log</li>
+                  <li>Extent HTML Report</li>
+                </ul>
+                """
+            )
+        }
     }
 }
-
-
