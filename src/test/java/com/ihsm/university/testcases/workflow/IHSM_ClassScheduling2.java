@@ -15,7 +15,7 @@ import com.ihsm.university.utilities.RetryAnalyzer;
 public class IHSM_ClassScheduling2 extends BaseClass {
 
 	@Test(retryAnalyzer = RetryAnalyzer.class, groups = "regression", description = "Verify Full Group Assignment on IHSM University")
-	public void verifyClassScheduling() throws InterruptedException {
+	public void verifyClassGroupAssignment() throws InterruptedException {
 
 		IHSM_VerifyGroupAssignment group = new IHSM_VerifyGroupAssignment(getDriver());
 		group.verifyGroupAssignment();

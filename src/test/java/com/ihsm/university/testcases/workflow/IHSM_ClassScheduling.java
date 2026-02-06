@@ -15,7 +15,7 @@ import com.ihsm.university.utilities.RetryAnalyzer;
 public class IHSM_ClassScheduling extends BaseClass {
 
 	@Test(retryAnalyzer = RetryAnalyzer.class, groups = "regression", description = "Verify full Subject Credit on IHSM University")
-	public void verifyClassScheduling() throws InterruptedException {
+	public void verifyClassSubjectCredit() throws InterruptedException {
 
 		IHSM_ClassSubjectCreditTest credit = new IHSM_ClassSubjectCreditTest(getDriver());
 		credit.verifySubjectCredit();
