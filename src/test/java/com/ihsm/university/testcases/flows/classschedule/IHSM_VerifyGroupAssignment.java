@@ -1,45 +1,77 @@
 package com.ihsm.university.testcases.flows.classschedule;
 
-import org.openqa.selenium.WebDriver;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.testng.ITestResult;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import com.ihsm.university.base.BaseClass;
 import com.ihsm.university.pageobjects.classchedule.IHSM_FacultyGroupAssignment;
+import com.ihsm.university.pageobjects.classchedule.IHSM_FacultyShowData;
 import com.ihsm.university.utilities.ExtentListener;
 
 public class IHSM_VerifyGroupAssignment extends BaseClass {
 
-	private WebDriver driver;
+	private Map<String, String> stepStatus = new LinkedHashMap<>();
+	private SoftAssert soft = new SoftAssert();
 
-	public IHSM_VerifyGroupAssignment(WebDriver driver) {
-		this.driver = driver;
-	}
-
-	@Test(priority = 2)
+	@Test(priority = 0, testName = "Verify Group Assignment")
 	public void verifyGroupAssignment() {
 		ExtentListener.createNode("Group Assignment Information");
-		logger.info("Filling Group Assignment Information...");
-		SoftAssert soft = new SoftAssert();
-		int failCount = 0;
 		try {
 			IHSM_FacultyGroupAssignment facultyGroup = new IHSM_FacultyGroupAssignment(getDriver());
 			facultyGroup.fillGroupAssignmentInfo("2026 -2027", "1", "CENTRAL / Bachelor / MBBS", "1", "Main");
-			logger.info("Group Assignment Information Successfully");
 			ExtentListener.getNode().pass("Group Assignment Information Test Passed");
+			stepStatus.put("Group Assignment", "PASS");
 		} catch (Exception e) {
-			ExtentListener.getNode().fail(e);
-			soft.fail("Group Assignment Information Failed :" + e.getMessage());
-			failCount++;
+			ExtentListener.getNode().fail("Group Assignment Information Failed: " + e.getMessage());
+			stepStatus.put("Group Assignment", "FAIL");
+			soft.fail("Group Assignment Information Failed: " + e.getMessage());
 		}
-		ExtentListener.createNode("GROUP ASSIGNMENT INFORMATION");
+	}
 
-		if (failCount == 0) {
-			ExtentListener.getNode().pass("All Group Assignment Information sections executed successfully.");
-		} else {
-			ExtentListener.getNode().fail("Total Failed Sections in Group Assignment Information Flow: " + failCount);
+	@Test(testName = "Verify Faculty Group Data", priority = 1, dependsOnMethods = "verifyGroupAssignment", alwaysRun = true)
+	public void verifyFacultyGroupData() {
+		ExtentListener.createNode("Faculty Show Data Information");
+		try {
+			IHSM_FacultyShowData data = new IHSM_FacultyShowData(getDriver());
+			data.fillFacultyShowData("2026 -2027", "1", "CENTRAL / Bachelor / MBBS", "1",
+					"Демонстрационный факультет 3 (Demo Faculty 3)");
+
+			ExtentListener.getNode().pass("Faculty Show Data Test Passed");
+			stepStatus.put("Faculty Show Data", "PASS");
+		} catch (Exception e) {
+			ExtentListener.getNode().fail("Faculty Show Data Test Failed: " + e.getMessage());
+			stepStatus.put("Faculty Show Data", "FAIL");
+			soft.fail("Faculty Show Data Test Failed: " + e.getMessage());
 		}
+	}
 
+	@Test(testName = "Verify Faculty Group Data 2", priority = 1, dependsOnMethods = "verifyFacultyGroupData", alwaysRun = true)
+	public void verifyFacultyGroupData2() {
+		ExtentListener.createNode("Faculty Show Data Information");
+		try {
+			IHSM_FacultyShowData data = new IHSM_FacultyShowData(getDriver());
+			data.fillFacultyShowData("2026 -2027", "1", "CENTRAL / Bachelor / MBBS", "1",
+					"Демонстрационный факультет (Demo Faculty)");
+			ExtentListener.getNode().pass("Faculty Show Data Test Passed");
+			stepStatus.put("Faculty Show Data", "PASS");
+		} catch (Exception e) {
+			ExtentListener.getNode().fail("Faculty Show Data Test Failed: " + e.getMessage());
+			stepStatus.put("Faculty Show Data", "FAIL");
+			soft.fail("Faculty Show Data Test Failed: " + e.getMessage());
+		}
+	}
+
+	@AfterClass(alwaysRun = true)
+	public void summarizeGroupAssignmentFlow() {
+		System.out.println("==== Group Assignment Flow Status ====");
+		stepStatus.forEach((step, status) -> System.out.println(step + " : " + status));
+		System.out.println("====================================");
 		soft.assertAll();
 	}
 }

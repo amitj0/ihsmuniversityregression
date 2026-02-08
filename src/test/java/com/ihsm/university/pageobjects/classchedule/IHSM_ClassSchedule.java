@@ -1,12 +1,15 @@
 package com.ihsm.university.pageobjects.classchedule;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.ihsm.university.base.BasePage;
 
@@ -73,12 +76,22 @@ public class IHSM_ClassSchedule extends BasePage {
 
 	@FindBy(xpath = "//p[contains(text(),'First Week')]/following::div[contains(@class,'selectgroup-pills')][1]//label//span")
 	private List<WebElement> weekFieldList;
+	
+	@FindBy(xpath = "//p[contains(text(),'First Week')]/following::div[contains(@class,'selectgroup-pills')][1]//label")
+	private List<WebElement> weekFieldLabels;
+
 
 	@FindBy(xpath = "//label[normalize-space()='ONLINE']")
 	private WebElement onlineClass;
 
-	@FindBy(xpath = "//div[@id='Tab1']//label[contains(normalize-space(),'Time')]/following::ng-select[1]//div[@class='ng-select-container']")
-	private WebElement timeField;
+//	@FindBy(xpath = "//div[@id='Tab1']//label[contains(normalize-space(),'Time')]/following::ng-select[1]//div[@class='ng-select-container']")
+//	private WebElement timeField;
+
+	private WebElement waitForTimeDropdown() {
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+		return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+				"//ng-select[.//span[contains(text(),'Time')]] | //label[contains(text(),'Time')]/following::ng-select[1]")));
+	}
 
 	@FindBy(xpath = "//div[@role='listbox']//span[@class='ng-option-label']")
 	private List<WebElement> timeSlt;
@@ -205,38 +218,69 @@ public class IHSM_ClassSchedule extends BasePage {
 		enterDate(toDateField, date);
 	}
 
+	/*
+	 * public void weekSelect(String weekList) {
+	 * 
+	 * String[] days = weekList.split(",");
+	 * 
+	 * for (String day : days) {
+	 * 
+	 * for (WebElement option : weekFieldList) {
+	 * 
+	 * if (option.getText().trim().equalsIgnoreCase(day.trim())) {
+	 * safeClick(option); break; } } } }
+	 */
+	public void clearWeekSelection() {
+	    for (WebElement label : weekFieldLabels) {
+	        if (label.getAttribute("class").contains("active")) {
+	            safeClick(label); // toggle OFF
+	        }
+	    }
+	}
+
 	public void weekSelect(String weekList) {
 
-		String[] days = weekList.split(",");
+	    clearWeekSelection(); // KEY FIX
 
-		for (String day : days) {
+	    String[] days = weekList.split(",");
 
-			for (WebElement option : weekFieldList) {
-
-				if (option.getText().trim().equalsIgnoreCase(day.trim())) {
-					safeClick(option);
-					break;
-				}
-			}
-		}
+	    for (String day : days) {
+	        for (WebElement label : weekFieldLabels) {
+	            if (label.getText().trim().equalsIgnoreCase(day.trim())) {
+	                safeClick(label);
+	                break;
+	            }
+	        }
+	    }
 	}
+
 
 	public void onlineClass() {
 		safeClick(onlineClass);
 	}
+	/*
+	 * public void timeField() { safeClick(timeField); }
+	 */
+	
+	public void selectTimeSlot(String timeValue) {
 
-	public void timeField() {
-		safeClick(timeField);
+	    WebElement timeDropdown = waitForTimeDropdown();
+	    safeClick(timeDropdown);
+
+	    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+	    WebElement option = wait.until(ExpectedConditions.elementToBeClickable(
+	        By.xpath("//ng-dropdown-panel//span[normalize-space()='" + timeValue + "']")
+	    ));
+
+	    safeClick(option);
 	}
 
-	public void timeSlt(String timesStr) {
-		for (WebElement option : timeSlt) {
-			if (option.getText().trim().equalsIgnoreCase(timesStr)) {
-				safeClick(option);
-				return;
-			}
-		}
-	}
+
+	/*
+	 * public void timeSlt(String timesStr) { for (WebElement option : timeSlt) { if
+	 * (option.getText().trim().equalsIgnoreCase(timesStr)) { safeClick(option);
+	 * return; } } }
+	 */
 
 	public void contraintsField() {
 		safeClick(constraintsField);
@@ -294,8 +338,10 @@ public class IHSM_ClassSchedule extends BasePage {
 		toDateField(enterToDate);
 		weekSelect(week);
 		onlineClass();
-		timeField();
-		timeSlt(timeSelect);
+//		timeField();
+//		timeSlt(timeSelect);
+		selectTimeSlot(timeSelect);
+
 		constList(conList);
 		saveBtn();
 		okButton();

@@ -13,6 +13,7 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.ITestResult;
 import org.testng.annotations.*;
 
 import com.aventstack.extentreports.ExtentReports;
@@ -41,9 +42,10 @@ public class BaseClass {
 
 	protected static ExtentReports extent;
 	protected static ThreadLocal<ExtentTest> extentTest = new ThreadLocal<>();
+	protected static WebDriver sharedDriver;
 
 	public static Logger logger;
-	protected Properties prop;
+	protected static Properties prop;
 	protected LoginPage loginPage;
 
 	// ================= DRIVER GETTERS =================
@@ -56,7 +58,7 @@ public class BaseClass {
 	}
 
 	// ================= LOAD CONFIG =================
-	@BeforeClass(alwaysRun = true)
+	@BeforeSuite(alwaysRun = true)
 	public void initConfig() {
 		try {
 			logger = LogManager.getLogger("BaseClass");
@@ -87,48 +89,50 @@ public class BaseClass {
 
 	// ================= BEFORE EACH TEST =================
 	@Parameters({ "browser" })
-	@BeforeMethod(alwaysRun = true)
+	@BeforeClass(alwaysRun = true)
 	public void beforeEachTest(@Optional("chrome") String browser) {
 
-		boolean seleniumGrid = Boolean.parseBoolean(prop.getProperty("seleniumGrid", "false"));
-		boolean headless = Boolean.parseBoolean(prop.getProperty("headless", "false"));
-		String gridUrl = prop.getProperty("gridURL");
+		if (sharedDriver == null) {
+			// First class running: create the driver
+			boolean seleniumGrid = Boolean.parseBoolean(prop.getProperty("seleniumGrid", "false"));
+			boolean headless = Boolean.parseBoolean(prop.getProperty("headless", "false"));
+			String gridUrl = prop.getProperty("gridURL");
 
-		WebDriver webDriver;
+			try {
+				if (seleniumGrid) {
+					logger.info("Running on Selenium Grid");
+					sharedDriver = getGridDriver(browser, headless, gridUrl);
+				} else {
+					logger.info("Running locally on browser: " + browser);
+					sharedDriver = getLocalDriver(browser, headless);
+				}
 
-		try {
-			if (seleniumGrid) {
-				logger.info("Running on Selenium Grid");
-				webDriver = getGridDriver(browser, headless, gridUrl);
-			} else {
-				logger.info("Running locally on browser: " + browser);
-				webDriver = getLocalDriver(browser, headless);
+				driver.set(sharedDriver);
+				wait.set(new WebDriverWait(sharedDriver, Duration.ofSeconds(10)));
+
+				// Set faster timeouts
+				sharedDriver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+				sharedDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
+				sharedDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(30));
+				sharedDriver.manage().deleteAllCookies();
+
+				sharedDriver.get(prop.getProperty("url"));
+				logger.info("Navigated to URL: " + prop.getProperty("url"));
+
+				loginPage = new LoginPage(sharedDriver);
+				loginPage.login(prop.getProperty("username"), prop.getProperty("password"));
+				logger.info("Logged in successfully with shared driver");
+
+			} catch (Exception e) {
+				logger.error("❌ Setup failed. Aborting test.", e);
+				throw new RuntimeException("Test setup failed", e);
 			}
 
-			driver.set(webDriver);
-			wait.set(new WebDriverWait(webDriver, Duration.ofSeconds(10)));
-
-			if (getDriver() == null) {
-				throw new RuntimeException("WebDriver is NULL after initialization");
-			}
-
-			// Set here timeouts for faster execution
-			getDriver().manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-			getDriver().manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
-			getDriver().manage().timeouts().scriptTimeout(Duration.ofSeconds(30));
-
-			getDriver().manage().deleteAllCookies();
-			getDriver().get(prop.getProperty("url"));
-			logger.info("Navigated to URL: " + prop.getProperty("url"));
-
-			loginPage = new LoginPage(getDriver());
-			loginPage.login(prop.getProperty("username"), prop.getProperty("password"));
-
-			logger.info("Logged in successfully");
-
-		} catch (Exception e) {
-			logger.error("❌ Setup failed. Aborting test.", e);
-			throw new RuntimeException("Test setup failed", e);
+		} else {
+			// Reuse existing driver
+			driver.set(sharedDriver);
+			wait.set(new WebDriverWait(sharedDriver, Duration.ofSeconds(10)));
+			logger.info("Reusing shared driver");
 		}
 	}
 
@@ -242,14 +246,44 @@ public class BaseClass {
 	}
 
 	// ================= AFTER EACH TEST =================
-	@AfterMethod(alwaysRun = true)
+	@AfterClass(alwaysRun = true)
 	public void tearDown() {
 		if (getDriver() != null) {
-			getDriver().quit();
+
 			driver.remove();
 			wait.remove();
 		}
 	}
+
+	@AfterSuite(alwaysRun = true)
+	public void afterSuite() {
+		if (sharedDriver != null) {
+			sharedDriver.quit();
+			sharedDriver = null;
+			logger.info("Shared browser closed after suite");
+		}
+	}
+
+	// for clean start for the new test
+	@AfterMethod(alwaysRun = true)
+	public void cleanUpAfterEachTest(ITestResult result) {
+
+	    // Refresh ONLY if test failed or skipped
+	    if (result.getStatus() == ITestResult.FAILURE ||
+	        result.getStatus() == ITestResult.SKIP) {
+
+	        try {
+	            System.out.println("Test failed/skipped → cleaning up");
+
+	            getDriver().switchTo().defaultContent();
+	            getDriver().navigate().refresh();
+
+	        } catch (Exception e) {
+	            System.out.println("Cleanup failed: " + e.getMessage());
+	        }
+	    }
+	}
+
 
 	// ================= SCREENSHOT =================
 	public static String captureScreenshot(String testName) throws IOException {

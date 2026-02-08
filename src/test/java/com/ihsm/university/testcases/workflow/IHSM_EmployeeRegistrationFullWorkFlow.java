@@ -21,15 +21,15 @@ public class IHSM_EmployeeRegistrationFullWorkFlow extends BaseClass {
 		logger.info("Basic Information filled successfully..........");
 		ExtentListener.getNode().pass("Employee Full Basic Information Flow Passed");
 
-		IHSM_FullDesignationFlow designInformationFlow = new IHSM_FullDesignationFlow();
-		designInformationFlow.execute();
-		logger.info("Designation Information filled successfully.......");
-		ExtentListener.getNode().pass("Employee Full Designation Information Flow Passed");
-
-		IHSM_FullProfessionalInformation profInfoFlow = new IHSM_FullProfessionalInformation();
-		profInfoFlow.execute();
-		logger.info("Professional Information filled successfully.......");
-		ExtentListener.getNode().pass("Employee Full Professional Information Flow Passed");
+//		IHSM_FullDesignationFlow designInformationFlow = new IHSM_FullDesignationFlow();
+//		designInformationFlow.execute();
+//		logger.info("Designation Information filled successfully.......");
+//		ExtentListener.getNode().pass("Employee Full Designation Information Flow Passed");
+//
+//		IHSM_FullProfessionalInformation profInfoFlow = new IHSM_FullProfessionalInformation();
+//		profInfoFlow.execute();
+//		logger.info("Professional Information filled successfully.......");
+//		ExtentListener.getNode().pass("Employee Full Professional Information Flow Passed");
 
 		IHSM_FullDocumentsFlow docInfoFlow = new IHSM_FullDocumentsFlow();
 		docInfoFlow.execute();

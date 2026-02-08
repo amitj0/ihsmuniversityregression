@@ -8,7 +8,7 @@ public class StudentFullRegistrationDataProvider {
 	// Define Excel sheet name
 	private static final String SHEET_NAME = "studentData";
 
-	@DataProvider(name = "studentData", parallel = true)
+	@DataProvider(name = "studentData", parallel = false)
 	public static Object[][] getStudentData() {
 		try {
 			// 1️ Load Excel

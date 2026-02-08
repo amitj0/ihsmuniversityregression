@@ -38,6 +38,7 @@ public class Documents_Documents extends BasePage {
 	
 
 	@FindBy(xpath = "//div[@id='AlertSuccesModal' and contains(@class,'show')]//button[normalize-space()='Ok']")
+	
 	private WebElement okButtonSuccessPopup;
 
 	// methods to perform the action

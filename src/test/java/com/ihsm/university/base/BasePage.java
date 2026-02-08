@@ -27,7 +27,7 @@ public class BasePage {
 	protected static WebDriver driver;
 	protected WebDriverWait wait;
 	private static final Duration WAIT_TIMEOUT = Duration
-			.ofSeconds(Integer.parseInt(System.getProperty("wait.timeout", "2"))); 
+			.ofSeconds(Integer.parseInt(System.getProperty("wait.timeout", "2")));
 
 	protected static Logger logger;
 
@@ -75,7 +75,6 @@ public class BasePage {
 				}
 			}
 		}
-		
 
 		if (parsedDate == null) {
 			throw new IllegalArgumentException(
@@ -158,56 +157,6 @@ public class BasePage {
 		}
 	}
 
-	/*
-	 * public void selectNgDropdownValue(WebElement dropdown, String value,
-	 * WebElement addButton, WebElement inputField, WebElement saveButton,
-	 * WebElement okButton) {
-	 * 
-	 * WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(800)); //
-	 * Reduced from 2 seconds
-	 * 
-	 * // Open dropdown using JS WebElement container =
-	 * dropdown.findElement(By.xpath(
-	 * ".//div[contains(@class,'ng-select-container')]")); ((JavascriptExecutor)
-	 * driver).executeScript("arguments[0].click();", container);
-	 * 
-	 * // Wait for options
-	 * wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(
-	 * "//div[@role='option']")));
-	 * 
-	 * List<WebElement> options =
-	 * driver.findElements(By.xpath("//div[@role='option']"));
-	 * 
-	 * boolean found = false;
-	 * 
-	 * for (WebElement option : options) { String text =
-	 * option.findElement(By.xpath(".//span[contains(@class,'ng-option-label')]")).
-	 * getText().trim();
-	 * 
-	 * if (text.equalsIgnoreCase(value)) { safeClick(option); found = true; break; }
-	 * }
-	 * 
-	 * // If not found → add new value if (!found) {
-	 * 
-	 * safeClick(addButton); safeClick(inputField); inputField.sendKeys(value);
-	 * safeClick(saveButton); safeClick(okButton);
-	 * 
-	 * // reopen dropdown ((JavascriptExecutor)
-	 * driver).executeScript("arguments[0].click();", container);
-	 * 
-	 * wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(
-	 * "//div[@role='option']")));
-	 * 
-	 * options = driver.findElements(By.xpath("//div[@role='option']"));
-	 * 
-	 * for (WebElement option : options) { String text =
-	 * option.findElement(By.xpath(".//span[contains(@class,'ng-option-label')]")).
-	 * getText() .trim();
-	 * 
-	 * if (text.equalsIgnoreCase(value)) { safeClick(option); return; } }
-	 * 
-	 * throw new RuntimeException("Failed to select value: " + value); } }
-	 */
 	public void selectNgDropdownValue(WebElement dropdown, String value, WebElement addButton, WebElement inputField,
 			WebElement saveButton, WebElement okButton) {
 
@@ -583,6 +532,11 @@ public class BasePage {
 		}
 	}
 
+	protected void triggerBlur(WebElement element) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].blur();", element);
+	}
+
 	public void handleAlertIfPresent() {
 		try {
 			WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(500)); // Reduced from 2 seconds
@@ -681,17 +635,14 @@ public class BasePage {
 		}
 		return "default.png";
 	}
-	
+
 	public void waitForClickable(WebElement element) {
-	    new WebDriverWait(driver, Duration.ofSeconds(3))
-	            .until(ExpectedConditions.elementToBeClickable(element));
+		new WebDriverWait(driver, Duration.ofSeconds(3)).until(ExpectedConditions.elementToBeClickable(element));
 	}
 
 	public void waitForVisibilityOfAll(List<WebElement> elements) {
-	    new WebDriverWait(driver, Duration.ofSeconds(3))
-	            .until(ExpectedConditions.visibilityOfAllElements(elements));
+		new WebDriverWait(driver, Duration.ofSeconds(3)).until(ExpectedConditions.visibilityOfAllElements(elements));
 	}
-
 
 	private void reinitializePageElements() {
 		PageFactory.initElements(driver, this);
@@ -786,6 +737,40 @@ public class BasePage {
 
 		} catch (Exception e) {
 			throw new NoSuchElementException("Dropdown value not found: " + optionText, e);
+		}
+	}
+
+	protected void handlePassportConfirmation() {
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+
+		try {
+			// Browser alert (rare case)
+			try {
+				Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+				logger.info("Alert detected: " + alert.getText());
+				alert.accept();
+				return;
+			} catch (TimeoutException ignored) {
+			}
+
+			// Bootstrap success modal
+			WebElement okBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(
+					"//div[contains(@class,'modal') and contains(@class,'show')]//button[normalize-space()='Ok']")));
+
+			((JavascriptExecutor) driver).executeScript("arguments[0].click();", okBtn);
+
+			wait.until(ExpectedConditions.invisibilityOfElementLocated(
+					By.xpath("//div[contains(@class,'modal') and contains(@class,'show')]")));
+
+			logger.info("Passport saved successfully");
+
+		} catch (Exception e) {
+			try {
+				captureScreenshot("Passport_Save_Failed");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			throw new RuntimeException("Passport save confirmation failed", e);
 		}
 	}
 

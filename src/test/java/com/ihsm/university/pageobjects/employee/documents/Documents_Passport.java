@@ -4,6 +4,9 @@ import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -59,7 +62,7 @@ public class Documents_Passport extends BasePage {
 	private WebElement issuePlaceDropdownField;
 
 	@FindBy(xpath = "//div[contains(@class,'ng-dropdown-panel')]//div[@role='option']")
-	private WebElement issuePlaceDropdownOptions;
+	private List<WebElement> issuePlaceDropdownOptions;
 
 	@FindBy(xpath = "(//div[@id='PassportModel']//label[contains(normalize-space(),'Place of issue')]/following::span[contains(@class,'addvalue')])[1]")
 	private WebElement addIssuePlacePlusButton;
@@ -70,7 +73,7 @@ public class Documents_Passport extends BasePage {
 	@FindBy(xpath = "(//input[@placeholder='DD-MM-YYYY'])[4]")
 	private WebElement expiryDateField;
 
-	@FindBy(xpath = "//div[@id='PassportModel']//button[contains(@class, 'btnprimary') and text()='Save']")
+	@FindBy(xpath = "//div[@id='PassportModel']//div[@class='modal-content']//button[contains(@class,'btnprimary') and text()='Save']")
 	private WebElement savePassportBtn;
 
 	@FindBy(xpath = "//div[@id='AlertSuccesModal' and contains(@class,'show')]//button[normalize-space()='Ok']")
@@ -185,19 +188,29 @@ public class Documents_Passport extends BasePage {
 	}
 
 	public void enterAgency(String agency) {
+		safeClick(agencyField);
+		agencyField.clear();
 		agencyField.sendKeys(agency);
+		triggerBlur(agencyField);
 	}
 
 	public void enterPassportSeries(String passportSeries) {
+		safeClick(passportSeriesField);
+		passportSeriesField.clear();
 		passportSeriesField.sendKeys(passportSeries);
+		triggerBlur(passportSeriesField);
 	}
 
 	public void enterPassportNumber(String passportNumber) {
+		safeClick(passportNumberField);
+		passportNumberField.clear();
 		passportNumberField.sendKeys(passportNumber);
+		triggerBlur(passportNumberField);
 	}
 
 	public void issuePlaceDropdownField() {
 		safeClick(issuePlaceDropdownField);
+
 	}
 
 	public void selectIssuePlaceOption(String issuePlace) {
@@ -208,7 +221,7 @@ public class Documents_Passport extends BasePage {
 		boolean found = false;
 
 		// Try selecting existing value
-		for (WebElement option : passportTypeDropdownOptions) {
+		for (WebElement option : issuePlaceDropdownOptions) {
 			if (option.getText().trim().equalsIgnoreCase(issuePlace)) {
 				safeClick(option);
 				found = true;
@@ -236,7 +249,7 @@ public class Documents_Passport extends BasePage {
 			safeClick(issuePlaceDropdownField);
 
 			// Select newly added value
-			for (WebElement option : passportTypeDropdownOptions) {
+			for (WebElement option : issuePlaceDropdownOptions) {
 				if (option.getText().trim().equalsIgnoreCase(issuePlace)) {
 					safeClick(option);
 					return;
@@ -248,49 +261,30 @@ public class Documents_Passport extends BasePage {
 	}
 
 	public void enterIssueDate(String issueDate) {
-		issueDateField.sendKeys(issueDate);
+		enterDate(issueDateField, issueDate);
+
 	}
 
 	public void enterExpiryDate(String expiryDate) {
-		expiryDateField.sendKeys(expiryDate);
+		enterDate(expiryDateField, expiryDate);
+
 	}
 
 	public void savePassportBtn() {
 		blinkElement(savePassportBtn);
-
 		try {
-			captureScreenshot("Biometrics_Information_Before_Save");
+			captureScreenshot("Passport Information Filled");
 		} catch (Exception e) {
-			e.getMessage();
+			e.printStackTrace();
 		}
-
-		// Click Save button
 		safeClick(savePassportBtn);
-		logger.info("Save button clicked");
-
-		// CRITICAL: Handle the confirmation alert "Are you sure you want to submit
-
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-
+		handlePassportConfirmation();
 	}
 
 	public void okButtonSuccessPopup() {
 		blinkElement(okButtonSuccessPopup);
 		handleModalOk(okButtonSuccessPopup);
 	}
-
-	/*
-	 * public void savePassportBtn() { blinkElement(savePassportBtn); try {
-	 * captureScreenshot("Passport Information Filled"); } catch (Exception e) {
-	 * e.printStackTrace(); } safeClick(savePassportBtn); handleAlertIfPresent(); }
-	 * 
-	 * public void okButtonSuccessPopup() { blinkElement(okButtonSuccessPopup);
-	 * handleModalOk(okButtonSuccessPopup); }
-	 */
 
 	public boolean isDocPassInfoSavedSuccessfully() {
 		return okButtonSuccessPopup.isDisplayed();
@@ -310,7 +304,7 @@ public class Documents_Passport extends BasePage {
 		issuePlaceDropdownField();
 		selectIssuePlaceOption(issuePlace);
 		enterIssueDate(issueDate);
-		enterExpiryDate(expiryDate);
+
 		savePassportBtn();
 		okButtonSuccessPopup();
 

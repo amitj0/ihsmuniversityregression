@@ -56,6 +56,25 @@ public class IHSM_FacultyGroupAssignment extends BasePage {
 	@FindBy(xpath = "//div[@id='Tab1']//div[contains(@class,'card-footer')]//button[normalize-space()='Search']")
 	private WebElement searchButton;
 
+	// other
+	@FindBy(xpath = "//table[@id='tblTotalSubjects']//tbody//tr[3]//td[4]")
+	private WebElement lecture;
+
+	@FindBy(xpath = "//div[@id='dvGroupStudentCount']//select")
+	private WebElement sltFacultyField;
+
+	@FindBy(xpath = "//div[@id='dvGroupStudentCount']//option")
+	private List<WebElement> facList;
+
+	@FindBy(xpath = "//div[@id='dvGroupStudentCount']//table//tbody//tr//td[2]//input")
+	private WebElement selectCheckbox;
+
+	@FindBy(xpath = "//span[@class='btntext']")
+	private WebElement saveBtn;
+
+	@FindBy(xpath = "//div[@id='AlertSuccesModal' and contains(@class,'show')]//button[normalize-space()='Ok']")
+	private WebElement okBtn;
+
 	// method to perform the action
 
 	public void coursePlannerTab() {
@@ -145,6 +164,40 @@ public class IHSM_FacultyGroupAssignment extends BasePage {
 		safeClick(searchButton);
 	}
 
+	// other scenario
+	public void lecture() {
+		safeClick(lecture);
+	}
+
+	public void sltFacultyField() {
+		safeClick(sltFacultyField);
+	}
+
+	public void facList(String facultyList) {
+		safeClick(sltFacultyField);
+
+		for (WebElement option : facList) {
+			if (option.getText().trim().equalsIgnoreCase(facultyList)) {
+				safeClick(option);
+				return;
+			}
+		}
+	}
+	
+	public void selectCheckbox() {
+		safeClick(selectCheckbox);
+	}
+	
+	public void saveBtn() {
+		safeClick(saveBtn);
+	}
+	
+	public void okBtn() {
+		safeClick(okBtn);
+	}
+
+	
+	
 	// fill the Faculty Group Assignment Information
 	public void fillGroupAssignmentInfo(String facList, String facBatch, String facAcad, String facSem,
 			String facSubType) {
@@ -161,6 +214,15 @@ public class IHSM_FacultyGroupAssignment extends BasePage {
 		facultySubTypeField();
 		facultySubTypeFieldList(facSubType);
 		searchButton();
+		
+//		other scenario
+//		lecture();
+//		sltFacultyField();
+//		facList(fac);
+//		selectCheckbox();
+//		saveBtn();
+//		okBtn();
+		
 
 	}
 

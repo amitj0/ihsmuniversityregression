@@ -1,6 +1,9 @@
 package com.ihsm.university.testcases.flows.classschedule;
 
-import org.openqa.selenium.WebDriver;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -10,39 +13,43 @@ import com.ihsm.university.utilities.ExtentListener;
 
 public class IHSM_ClassSchedulingInformationTest extends BaseClass {
 
-	String[] dates = TestDataGenerator.getRandomScheduleDates();
-	private WebDriver driver;
+	private Map<String, String> stepStatus = new LinkedHashMap<>();
+	private SoftAssert soft = new SoftAssert();
 
-	public IHSM_ClassSchedulingInformationTest(WebDriver driver) {
-		this.driver = driver;
-	}
+	@Test(priority = 0, testName = "Verify Class Scheduling")
+	public void verifyClassSchedule() {
 
-	@Test(priority = 3)
-	public void verifyClassScheduleInfo() throws InterruptedException {
-		ExtentListener.createNode("Subject Credit Information");
-		logger.info("Filling Class Scheduling Information...");
-		SoftAssert soft = new SoftAssert();
+		String[] dates = TestDataGenerator.getRandomScheduleDates();
+
+		ExtentListener.createNode("Class Scheduling Information");
 		int failCount = 0;
+
 		try {
 			IHSM_ClassSchedule classInfo = new IHSM_ClassSchedule(getDriver());
 			classInfo.fillClassSchedulingInformation("2026 -2027", "1", 1, 1, 1, dates[0], dates[1], "MON,FRI",
 					"1 Class Every Week", "08:00 - 09:35");
-			logger.info("Class Scheduling add successfully");
-			ExtentListener.getNode().pass("Class Scheduling Information Test Passed");
+			ExtentListener.getNode().pass("Class Scheduling added successfully");
+			stepStatus.put("Class Scheduling", "PASS");
 		} catch (Exception e) {
-			ExtentListener.getNode().fail(e);
-			soft.fail("Class Scheduling Information Failed :" + e.getMessage());
+			ExtentListener.getNode().fail("Class Scheduling failed: " + e.getMessage());
+			stepStatus.put("Class Scheduling", "FAIL");
+			soft.fail("Class Scheduling failed: " + e.getMessage());
 			failCount++;
 		}
-		ExtentListener.createNode("CLASS SCHEDULING INFORMATION");
 
 		if (failCount == 0) {
-			ExtentListener.getNode().pass("All Class Scheduling Information sections executed successfully.");
+			ExtentListener.getNode().pass("All Class Scheduling sections executed successfully.");
 		} else {
-			ExtentListener.getNode().fail("Total Failed Sections in Class Scheduling Information Flow: " + failCount);
+			ExtentListener.getNode().fail("Total Failed Sections in Class Scheduling Flow: " + failCount);
 		}
 
 		soft.assertAll();
 	}
 
+	@AfterClass(alwaysRun = true)
+	public void summarizeClassSchedulingFlow() {
+		System.out.println("==== Class Scheduling Flow Status ====");
+		stepStatus.forEach((step, status) -> System.out.println(step + " : " + status));
+		System.out.println("====================================");
+	}
 }

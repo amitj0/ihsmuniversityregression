@@ -49,34 +49,48 @@ public class ExtentListener implements ITestListener {
 	public void onTestStart(ITestResult result) {
 
 		String testName = result.getMethod().getMethodName();
-
+		
+		// Fallback to method name if testName is not provided
+		if (testName == null || testName.trim().isEmpty()) {
+			testName = result.getMethod().getMethodName();
+		}
 		ExtentTest parent = extent.createTest(testName);
-		parent.assignAuthor("Automation Team");
+		parent.assignAuthor("Amit");
 		parent.assignCategory(result.getMethod().getGroups());
 
 		parentTest.set(parent);
+		childTest.remove();
 	}
 
 	// ================= TEST PASS =================
 	@Override
 	public void onTestSuccess(ITestResult result) {
 
-		parentTest.get().pass(MarkupHelper.createLabel("TEST PASSED", ExtentColor.GREEN));
+		ExtentTest test = parentTest.get();
+		if (test != null) {
+			test.pass(MarkupHelper.createLabel("TEST PASSED", ExtentColor.GREEN));
+		}
 	}
 
 	// ================= TEST FAIL =================
 	@Override
 	public void onTestFailure(ITestResult result) {
 
-		parentTest.get().fail(MarkupHelper.createLabel("TEST FAILED", ExtentColor.RED));
+		ExtentTest test = parentTest.get();
 
-		parentTest.get().fail(result.getThrowable());
+		if (test == null) {
+			return;
+		}
+
+		test.fail(MarkupHelper.createLabel("TEST FAILED", ExtentColor.RED));
+
+		test.fail(result.getThrowable());
 
 		try {
 			String path = BaseClass.captureScreenshot(result.getName());
-			parentTest.get().addScreenCaptureFromPath("../screenshots/" + new File(path).getName());
+			test.addScreenCaptureFromPath("../screenshots/" + new File(path).getName());
 		} catch (Exception e) {
-			parentTest.get().warning("Screenshot capture failed");
+			test.warning("Screenshot capture failed");
 		}
 	}
 

@@ -88,44 +88,42 @@ public class BasicInfo_VaccinationInformation extends BasePage {
 		try {
 			// Try multiple strategies to find and click the OK button
 			WebElement okBtn = wait.until(driver -> {
-				// Strategy 1: Check specific success modal OK button
+				// Check specific success modal OK button
 				List<WebElement> okButtons = driver.findElements(successOkButton);
 				if (!okButtons.isEmpty() && okButtons.get(0).isDisplayed()) {
 					logger.info("Found OK button via successOkButton locator");
 					return okButtons.get(0);
 				}
-				
-				// Strategy 2: Check any visible modal with OK button
-				List<WebElement> anyOkBtn = driver.findElements(
-					By.xpath("//div[contains(@class,'modal') and contains(@class,'show')]//button[normalize-space()='Ok']")
-				);
+
+				// Check any visible modal with OK button
+				List<WebElement> anyOkBtn = driver.findElements(By.xpath(
+						"//div[contains(@class,'modal') and contains(@class,'show')]//button[normalize-space()='Ok']"));
 				if (!anyOkBtn.isEmpty() && anyOkBtn.get(0).isDisplayed()) {
 					logger.info("Found OK button via generic modal search");
 					return anyOkBtn.get(0);
 				}
-				
-				// Strategy 3: Check if modal exists in DOM (even without show class)
-				List<WebElement> modalOkBtn = driver.findElements(
-					By.xpath("//div[@id='AlertSuccesModal']//button[normalize-space()='Ok']")
-				);
+
+				// Check if modal exists in DOM (even without show class)
+				List<WebElement> modalOkBtn = driver
+						.findElements(By.xpath("//div[@id='AlertSuccesModal']//button[normalize-space()='Ok']"));
 				if (!modalOkBtn.isEmpty() && modalOkBtn.get(0).isDisplayed()) {
 					logger.info("Found OK button via modal ID (no show class required)");
 					return modalOkBtn.get(0);
 				}
-				
+
 				return null;
 			});
 
 			blinkElement(okBtn);
 			safeClick(okBtn);
-			
+
 			// Wait briefly for modal to close
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
-			
+
 			logger.info("Success popup handled successfully");
 
 		} catch (TimeoutException e) {
@@ -133,25 +131,25 @@ public class BasicInfo_VaccinationInformation extends BasePage {
 
 			try {
 				captureScreenshot("Vaccination_Save_Failed");
-				
+
 				// Log diagnostic information
 				logger.info("Checking if modal exists in DOM...");
 				List<WebElement> modals = driver.findElements(successModal);
 				logger.info("Modal elements found: " + modals.size());
-				
+
 				if (!modals.isEmpty()) {
 					WebElement modal = modals.get(0);
 					logger.info("Modal display: " + modal.getCssValue("display"));
 					logger.info("Modal visibility: " + modal.getCssValue("visibility"));
 					logger.info("Modal class: " + modal.getAttribute("class"));
 				}
-				
+
 			} catch (Exception ex) {
 				logger.error("Screenshot/diagnostic capture failed", ex);
 			}
 
 			throw new RuntimeException("Success modal did not appear after vaccination save", e);
-			
+
 		} catch (Exception e) {
 			logger.error("Unexpected error handling success popup", e);
 
@@ -296,14 +294,14 @@ public class BasicInfo_VaccinationInformation extends BasePage {
 		}
 
 		safeClick(saveVaccinationInfoBtn);
-		
+
 		// Add delay for backend processing in headless mode
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
-		
+
 		handleSubmissionConfirmation();
 	}
 
