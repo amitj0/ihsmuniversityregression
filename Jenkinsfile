@@ -32,6 +32,7 @@ pipeline {
     environment {
         PROJECT     = "IHSM UNIVERSITY AUTOMATION"
         REPORT_NAME = "IHSM University Extent Report"
+        DASHBOARD_NOTE = "The Extent Report dashboard has been updated. Please open the report and press “D” to view the dashboard data."
     }
 
     /***********************
@@ -133,6 +134,7 @@ TEST TYPE : ${params.TEST_TYPE}
                 attachmentsPattern: 'reports/*.html',
 
                 body: """
+                <h3 style="color:green;">ℹ️ ${DASHBOARD_NOTE}</h3>
                 <h2 style="color:green;">Execution Successful</h2>
 
                 <p><b>Project:</b> ${PROJECT}</p>
