@@ -33,13 +33,11 @@ public class IHSM_DocumentFullFlowTest extends BaseClass {
 
 	@Test(dependsOnMethods = "documentsInformation", alwaysRun = true)
 	public void passportInformation() {
-
 		boolean skipThisTest = true;
 
 		if (skipThisTest) {
-			ExtentListener.getNode().skip("Skipping Passport Information – loader issue");
-			stepStatus.put("Passport Information", "SKIPPED");
-			throw new SkipException("Skipping Passport Information – loader issue");
+		    stepStatus.put("Passport Information", "SKIPPED");
+		    throw new SkipException("Skipping Passport Information – loader issue");
 		}
 
 		ExtentListener.createNode("Passport Information");

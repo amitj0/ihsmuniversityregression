@@ -95,10 +95,18 @@ public class ExtentListener implements ITestListener {
 	}
 
 	// ================= TEST SKIP =================
+	
 	@Override
 	public void onTestSkipped(ITestResult result) {
 
-		parentTest.get().skip(MarkupHelper.createLabel("TEST SKIPPED", ExtentColor.YELLOW));
+	    ExtentTest test = parentTest.get();
+
+	    if (test != null) {
+	        test.skip(MarkupHelper.createLabel("TEST SKIPPED", ExtentColor.YELLOW));
+	        if (result.getThrowable() != null) {
+	            test.skip(result.getThrowable());
+	        }
+	    }
 	}
 
 	// ================= SUITE FINISH =================
@@ -113,14 +121,21 @@ public class ExtentListener implements ITestListener {
 	// ================= NODE CREATION =================
 	public static ExtentTest createNode(String stepName) {
 
-		ExtentTest node = parentTest.get().createNode(stepName);
-		childTest.set(node);
-		return node;
+	    ExtentTest parent = parentTest.get();
+	    if (parent == null) {
+	        return null;
+	    }
+
+	    ExtentTest node = parent.createNode(stepName);
+	    childTest.set(node);
+	    return node;
 	}
 
+
 	public static ExtentTest getNode() {
-		return childTest.get();
+	    return childTest.get() != null ? childTest.get() : parentTest.get();
 	}
+
 
 	public static ExtentTest getTest() {
 		return parentTest.get();
