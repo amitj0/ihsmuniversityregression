@@ -165,6 +165,7 @@ TEST TYPE : ${params.TEST_TYPE}
                 attachmentsPattern: 'reports/*.html',
 
                 body: """
+                 <h3 style="color:red;">ℹ️ ${DASHBOARD_NOTE}</h3>
                 <h2 style="color:red;">Execution Failed</h2>
 
                 <p><b>Project:</b> ${PROJECT}</p>
