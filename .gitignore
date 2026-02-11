@@ -30,3 +30,4 @@ src/test/java/com/ihsm/university/testcases/flows/student/IHSM_DesignationFullFl
 src/test/java/com/ihsm/university/testcases/flows/student/IHSM_DocumentsFullFlowTest.java
 src/test/java/com/ihsm/university/testcases/flows/student/StudentFullRegistrationDataProvider.java
 src/test/java/com/ihsm/university/testcases/flows/employee/IHSM_DesignationFullFlowTest.java
+src/test/java/com/ihsm/university/testcases/flows/employee/IHSM_DocumentFullFlowTest.java
