@@ -13,7 +13,7 @@
 		<classes>
 
 			<!-- Student Registration Module -->
-			<!--<class
+			<class
 				name="com.ihsm.university.testcases.flows.student.IHSM_BasicFullFlowTest" />
 			<class
 				name="com.ihsm.university.testcases.flows.student.IHSM_DocumentFullFlowTest" />
@@ -21,7 +21,7 @@
 				name="com.ihsm.university.testcases.flows.student.IHSM_AcademicFullFlowTest" />
 			<class
 				name="com.ihsm.university.testcases.flows.student.IHSM_StatusFullFlowTest" />
--->
+
 			<!-- Employee Registration Module-->
 			<class
 				name="com.ihsm.university.testcases.flows.employee.IHSM_BasicFullFlowTest" />
