@@ -28,3 +28,4 @@ src/test/java/com/ihsm/university/testcases/flows/IHSM_BasicFullFlowTest.java
 src/test/java/com/ihsm/university/testcases/flows/student/IHSM_BasicFullFlowTest.java
 src/test/java/com/ihsm/university/testcases/flows/student/IHSM_DesignationFullFlowTest.java
 src/test/java/com/ihsm/university/testcases/flows/student/IHSM_DocumentsFullFlowTest.java
+src/test/java/com/ihsm/university/testcases/flows/student/StudentFullRegistrationDataProvider.java
