@@ -2,7 +2,7 @@ package com.ihsm.university.testcases.flows.student;
 
 public class StudentFullRegistrationDataVariables {
 
-    
+    //
 	// -------------------------- ENROLLMENT INFORMATION --------------------------
     public static String term;
     public static String course;
