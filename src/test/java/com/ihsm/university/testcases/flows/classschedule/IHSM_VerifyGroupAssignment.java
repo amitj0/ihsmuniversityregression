@@ -40,7 +40,7 @@ public class IHSM_VerifyGroupAssignment extends BaseClass {
 		try {
 			IHSM_FacultyShowData data = new IHSM_FacultyShowData(getDriver());
 			data.fillFacultyShowData("2026 -2027", "1", "CENTRAL / Bachelor / MBBS", "1",
-					"Демонстрационный факультет 3 (Demo Faculty 3)");
+					"Демонстрационный факультет 3 (Demo Faculty 3)", "Home");
 
 			ExtentListener.getNode().pass("Faculty Show Data Test Passed");
 			stepStatus.put("Faculty Show Data", "PASS");
@@ -57,7 +57,7 @@ public class IHSM_VerifyGroupAssignment extends BaseClass {
 		try {
 			IHSM_FacultyShowData data = new IHSM_FacultyShowData(getDriver());
 			data.fillFacultyShowData("2026 -2027", "1", "CENTRAL / Bachelor / MBBS", "1",
-					"Демонстрационный факультет (Demo Faculty)");
+					"Демонстрационный факультет (Demo Faculty)","Home");
 			ExtentListener.getNode().pass("Faculty Show Data Test Passed");
 			stepStatus.put("Faculty Show Data", "PASS");
 		} catch (Exception e) {

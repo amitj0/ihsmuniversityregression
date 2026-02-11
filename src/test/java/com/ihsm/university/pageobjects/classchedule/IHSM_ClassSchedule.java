@@ -76,10 +76,9 @@ public class IHSM_ClassSchedule extends BasePage {
 
 	@FindBy(xpath = "//p[contains(text(),'First Week')]/following::div[contains(@class,'selectgroup-pills')][1]//label//span")
 	private List<WebElement> weekFieldList;
-	
+
 	@FindBy(xpath = "//p[contains(text(),'First Week')]/following::div[contains(@class,'selectgroup-pills')][1]//label")
 	private List<WebElement> weekFieldLabels;
-
 
 	@FindBy(xpath = "//label[normalize-space()='ONLINE']")
 	private WebElement onlineClass;
@@ -202,6 +201,18 @@ public class IHSM_ClassSchedule extends BasePage {
 		safeClick(lecField);
 	}
 
+	public void clickLecByIndex(int index) {
+		By lecLinks = By.xpath("//a[contains(normalize-space(.),'LEC - ')]");
+
+		List<WebElement> elements = driver.findElements(lecLinks);
+
+		if (index < 0 || index >= elements.size()) {
+			throw new IllegalArgumentException("Invalid LEC index: " + index + ", total found: " + elements.size());
+		}
+
+		elements.get(index).click(); // index is 0-based here
+	}
+
 	public void groupField1() {
 		safeClick(groupFieldCheckBox1);
 	}
@@ -231,29 +242,28 @@ public class IHSM_ClassSchedule extends BasePage {
 	 * safeClick(option); break; } } } }
 	 */
 	public void clearWeekSelection() {
-	    for (WebElement label : weekFieldLabels) {
-	        if (label.getAttribute("class").contains("active")) {
-	            safeClick(label); // toggle OFF
-	        }
-	    }
+		for (WebElement label : weekFieldLabels) {
+			if (label.getAttribute("class").contains("active")) {
+				safeClick(label); // toggle OFF
+			}
+		}
 	}
 
 	public void weekSelect(String weekList) {
 
-	    clearWeekSelection(); // KEY FIX
+		clearWeekSelection(); // KEY FIX
 
-	    String[] days = weekList.split(",");
+		String[] days = weekList.split(",");
 
-	    for (String day : days) {
-	        for (WebElement label : weekFieldLabels) {
-	            if (label.getText().trim().equalsIgnoreCase(day.trim())) {
-	                safeClick(label);
-	                break;
-	            }
-	        }
-	    }
+		for (String day : days) {
+			for (WebElement label : weekFieldLabels) {
+				if (label.getText().trim().equalsIgnoreCase(day.trim())) {
+					safeClick(label);
+					break;
+				}
+			}
+		}
 	}
-
 
 	public void onlineClass() {
 		safeClick(onlineClass);
@@ -261,20 +271,18 @@ public class IHSM_ClassSchedule extends BasePage {
 	/*
 	 * public void timeField() { safeClick(timeField); }
 	 */
-	
+
 	public void selectTimeSlot(String timeValue) {
 
-	    WebElement timeDropdown = waitForTimeDropdown();
-	    safeClick(timeDropdown);
+		WebElement timeDropdown = waitForTimeDropdown();
+		safeClick(timeDropdown);
 
-	    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-	    WebElement option = wait.until(ExpectedConditions.elementToBeClickable(
-	        By.xpath("//ng-dropdown-panel//span[normalize-space()='" + timeValue + "']")
-	    ));
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+		WebElement option = wait.until(ExpectedConditions
+				.elementToBeClickable(By.xpath("//ng-dropdown-panel//span[normalize-space()='" + timeValue + "']")));
 
-	    safeClick(option);
+		safeClick(option);
 	}
-
 
 	/*
 	 * public void timeSlt(String timesStr) { for (WebElement option : timeSlt) { if
@@ -321,8 +329,7 @@ public class IHSM_ClassSchedule extends BasePage {
 	// fill the class scheduling information
 
 	public void fillClassSchedulingInformation(String session, String batch, int optionIndex, int sem, int subject,
-			String enterFromDate, String enterToDate, String week, String conList, String timeSelect)
-			throws InterruptedException {
+			int idx, String week, String conList, String timeSelect) throws InterruptedException {
 		openCoursePlannerTab();
 		openClassSchedule();
 		selectSession(session);
@@ -331,11 +338,11 @@ public class IHSM_ClassSchedule extends BasePage {
 		selectSemester(sem);
 		selectSubjectType(subject);
 		clickSearch();
-		lecField();
+		clickLecByIndex(idx);
 		groupField1();
 
-		fromDateField(enterFromDate);
-		toDateField(enterToDate);
+//		fromDateField(enterFromDate);
+//		toDateField(enterToDate);
 		weekSelect(week);
 		onlineClass();
 //		timeField();

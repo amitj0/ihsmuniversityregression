@@ -278,7 +278,7 @@ public class Documents_Passport extends BasePage {
 			e.printStackTrace();
 		}
 		safeClick(savePassportBtn);
-		handlePassportConfirmation();
+		handleAlertIfPresent();
 	}
 
 	public void okButtonSuccessPopup() {

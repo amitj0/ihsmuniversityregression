@@ -2,6 +2,7 @@ package com.ihsm.university.pageobjects.attandence;
 
 import java.util.List;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -45,6 +46,39 @@ public class IHSM_UnitMarks extends BasePage {
 
 	@FindBy(xpath = "//div[@id='divUnitMarksStudents']//button[contains(@class, 'btnprimary') and text()='Save']")
 	private WebElement saveBtn;
+	
+	@FindBy(xpath = "//div[@id='AlertErrorModal' and contains(@class,'show')]//button[normalize-space()='Ok']")
+	private WebElement okErrorButton;
+	
+	@FindBy(xpath = "(//h5[@id='staticBackdropLabel']//following-sibling::button[@class='btn-close'])[3]")
+	private WebElement cutButton;
+
+	// others
+	@FindBy(xpath = "//div[@data-bs-target='#pills-contact']")
+	private WebElement showMarksTab;
+
+	@FindBy(xpath = "//div[@id='Tab2']//ng-select[@name='strSessionIdSearch']")
+	private WebElement sessionField;
+
+	@FindBy(xpath = "//div[@id='Tab2']//ng-select[@name='strBatchIdSearch']")
+	private WebElement batchField;
+
+	@FindBy(xpath = "//div[@id='Tab2']//ng-select[@name='strAcademicPlanIdSearch']")
+	private WebElement academicPlanField;
+
+	@FindBy(xpath = "//div[@id='Tab2']//ng-select[@name='strSemesterIdSearch']")
+	private WebElement courseSearchField;
+
+	@FindBy(xpath = "//div[@id='pills-contact']//button[contains(@class, 'btnprimary') and text()='Search']")
+	private WebElement searchButton;
+	
+	@FindBy(xpath = "//table[@id='tblUnitPlanReport']//tbody//tr[1]//td[2]")
+	private WebElement seeDataField;
+	
+	@FindBy(xpath = "//div[@id='divUnitMarksReport']//button[contains(@class, 'btnsecondary') and text()='Close']")
+	private WebElement closeBtn;
+	
+
 
 	// method to perform the actions
 
@@ -102,12 +136,19 @@ public class IHSM_UnitMarks extends BasePage {
 	public void saveBtn() {
 		safeClick(saveBtn);
 	}
+	
+	public void okErrorButton() {
+		blinkElement(okErrorButton);
+		safeClick(okErrorButton);
+	}
+	
+	public void cutButton() {
+		safeClick(cutButton);
+	}
 
 	// fill the unit marks
 	public void fillUnitMarksInformation(String date, String input1, String input2, List<Integer> values) {
-		chooseDegreeFaculty();
-		choosePosition();
-		teacherTab();
+
 		unitMarksTab();
 		checkbox();
 		unitDateField(date);
@@ -115,5 +156,94 @@ public class IHSM_UnitMarks extends BasePage {
 		input2(input2);
 		enterInputAllInputMarks(values);
 		saveBtn();
+		okErrorButton();
+		cutButton();
+		
+	}
+
+	// method to perform the actions
+
+	public void showMarksTab() {
+		safeClick(showMarksTab);
+	}
+
+	public void selectSessionList(int index) {
+
+		// Open dropdown
+		safeClick(sessionField);
+
+		// Build xpath using index
+		WebElement option = sessionField
+				.findElement(By.xpath(".//div[@role='option' and contains(@id,'-" + index + "')]"));
+
+		safeClick(option);
+	}
+
+	public void selectBatchList(int index) {
+
+		// Open dropdown
+		safeClick(batchField);
+
+		// Build xpath using index
+		WebElement option = batchField
+				.findElement(By.xpath(".//div[@role='option' and contains(@id,'-" + index + "')]"));
+
+		safeClick(option);
+	}
+
+	public void selectAcademicList(int index) {
+
+		// Open dropdown
+		safeClick(academicPlanField);
+
+		// Build xpath using index
+		WebElement option = academicPlanField
+				.findElement(By.xpath(".//div[@role='option' and contains(@id,'-" + index + "')]"));
+
+		safeClick(option);
+	}
+
+	public void selectCourseSearchList(int index) {
+
+		// Open dropdown
+		safeClick(courseSearchField);
+
+		// Build xpath using index
+		WebElement option = courseSearchField
+				.findElement(By.xpath(".//div[@role='option' and contains(@id,'-" + index + "')]"));
+
+		safeClick(option);
+	}
+
+	public void searchButton() {
+		blinkElement(searchButton);
+		safeClick(searchButton);
+	}
+	
+	public void seeDataField() {
+		blinkElement(seeDataField);
+		safeClick(seeDataField);
+	}
+	
+	public void closeBtn() {
+		scrollToElement(closeBtn);
+		blinkElement(closeBtn);
+		safeClick(closeBtn);
+	}
+
+	// show unit marks
+	public void fillUnitMarksShowInformation(int session, int batch, int academics, int course) {
+
+		unitMarksTab();
+		showMarksTab();
+		selectSessionList(session);
+		selectBatchList(batch);
+		selectAcademicList(academics);
+		selectCourseSearchList(course);
+		searchButton();
+		seeDataField();
+		closeBtn();
+	
+
 	}
 }

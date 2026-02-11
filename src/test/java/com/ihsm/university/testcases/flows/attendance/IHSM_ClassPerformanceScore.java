@@ -28,7 +28,8 @@ public class IHSM_ClassPerformanceScore extends BaseClass {
 		int failCount = 0;
 
 		try {
-			List<Integer> attendanceValues = Arrays.asList(40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40);
+			List<Integer> attendanceValues = Arrays.asList(40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+					40, 40,40,40,40,40);
 			IHSM_ClassAttendance classAttendance = new IHSM_ClassAttendance(getDriver());
 			classAttendance.fillClassAttendance3(1, 1, 3, attendanceValues);
 			ExtentListener.getNode().pass("Class Attendance 3 added successfully");
@@ -48,7 +49,5 @@ public class IHSM_ClassPerformanceScore extends BaseClass {
 
 		soft.assertAll();
 	}
-
-	
 
 }

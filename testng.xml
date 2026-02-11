@@ -11,13 +11,9 @@
 		<parameter name="os" value="windows" />
 		<parameter name="browser" value="chrome" />
 		<classes>
-			<!--<class
-				name="com.ihsm.university.testcases.workflow.IHSM_StudentRegistrationFullWorkFlow" />
-			<class
-				name="com.ihsm.university.testcases.workflow.IHSM_EmployeeRegistrationFullWorkFlow" />-->
 
 			<!-- Student Registration Module -->
-			<class
+			<!--<class
 				name="com.ihsm.university.testcases.flows.student.IHSM_BasicFullFlowTest" />
 			<class
 				name="com.ihsm.university.testcases.flows.student.IHSM_DocumentFullFlowTest" />
@@ -25,7 +21,7 @@
 				name="com.ihsm.university.testcases.flows.student.IHSM_AcademicFullFlowTest" />
 			<class
 				name="com.ihsm.university.testcases.flows.student.IHSM_StatusFullFlowTest" />
-
+-->
 			<!-- Employee Registration Module-->
 			<class
 				name="com.ihsm.university.testcases.flows.employee.IHSM_BasicFullFlowTest" />
@@ -45,12 +41,10 @@
 			<class
 				name="com.ihsm.university.testcases.flows.classschedule.IHSM_ClassSchedulingInformationTest" />
 
-			<!-- Exam Management -->
+			<!-- Exam Management-->
 			<class
 				name="com.ihsm.university.testcases.flows.exammanage.IHSM_ExamManage" />
-				<!-- Class Attendance -->
-			<!--<class
-				name="com.ihsm.university.testcases.flows.attendance.IHSM_ClassAttendanceTest" />-->
+
 		</classes>
 	</test>
 

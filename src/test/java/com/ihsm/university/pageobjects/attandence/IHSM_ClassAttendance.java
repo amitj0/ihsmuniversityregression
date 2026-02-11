@@ -84,6 +84,7 @@ public class IHSM_ClassAttendance extends BasePage {
 	}
 
 	public void choosePosition() {
+		blinkElement(choosePosition);
 		safeClick(choosePosition);
 	}
 
@@ -276,8 +277,6 @@ public class IHSM_ClassAttendance extends BasePage {
 
 	public void fillClassAttendance3(int acadIdx, int crsIdx, int subIdx, List<Integer> attendanceValues) {
 
-		chooseDegreeFaculty();
-		choosePosition();
 		teacherTab();
 		classAttendance();
 		selectAcademicPlanByIndex(acadIdx);
@@ -295,8 +294,7 @@ public class IHSM_ClassAttendance extends BasePage {
 
 	public void fillClassAttendance4(int acadIdx, int crsIdx, int subIdx, List<Integer> attendanceValues) {
 
-		chooseDegreeFaculty();
-		choosePosition();
+		
 		teacherTab();
 		classAttendance();
 		selectAcademicPlanByIndex(acadIdx);

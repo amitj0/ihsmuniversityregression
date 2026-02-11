@@ -45,6 +45,9 @@ public class IHSM_FacultyShowData extends BasePage {
 	@FindBy(xpath = "//div[@id='Tab2']//div[contains(@class,'card-footer')]//button[normalize-space()='Search']")
 	private WebElement searchButton;
 
+	@FindBy(xpath = "//input[@type='search']")
+	private WebElement searchBox;
+
 	// other scenario
 
 	@FindBy(xpath = "//div[@id='tblFacGroupData_wrapper']//table[@id='tblFacGroupData']//tbody//tr[1]//td[2]")
@@ -129,6 +132,11 @@ public class IHSM_FacultyShowData extends BasePage {
 	}
 
 	// other scenario here
+	public void searchBox(String data) {
+		blinkElement(searchBox);
+		searchBox.sendKeys(data);
+	}
+
 	public void editBox() {
 		blinkElement(editBox);
 		safeClick(editBox);
@@ -150,22 +158,21 @@ public class IHSM_FacultyShowData extends BasePage {
 			}
 		}
 	}
-	
+
 	public void changeFacultyButton() {
 		blinkElement(changeFacultyButton);
 		safeClick(changeFacultyButton);
 	}
-	
+
 	public void okButton() {
 		blinkElement(okButton);
 		safeClick(okButton);
 		handleModalOk(okButton);
 	}
-	
-	
 
 	// fill the faculty show data
-	public void fillFacultyShowData(String sessionList, String batchList, String academicList, String semList, String facList) {
+	public void fillFacultyShowData(String sessionList, String batchList, String academicList, String semList,
+			String facList, String inputData) {
 		showDataTab();
 		sessionField();
 		sessionFieldList(sessionList);
@@ -176,16 +183,15 @@ public class IHSM_FacultyShowData extends BasePage {
 		semField();
 		semFieldList(semList);
 		searchButton();
-		
-		// other scenario 
+
+		// other scenario
+		searchBox(inputData);
 		editBox();
 		checkBox();
 		facultyChooseField();
 		facultyChooseFieldList(facList);
 		changeFacultyButton();
 		okButton();
-		
-		
 
 	}
 

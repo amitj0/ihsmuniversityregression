@@ -26,7 +26,7 @@ public class IHSM_ClassSchedulingInformationTest extends BaseClass {
 
 		try {
 			IHSM_ClassSchedule classInfo = new IHSM_ClassSchedule(getDriver());
-			classInfo.fillClassSchedulingInformation("2026 -2027", "1", 1, 1, 1, dates[0], dates[1], "MON,FRI",
+			classInfo.fillClassSchedulingInformation("2026 -2027", "1", 1, 1, 1,4, "MON,FRI",
 					"1 Class Every Week", "08:00 - 09:35");
 			ExtentListener.getNode().pass("Class Scheduling added successfully");
 			stepStatus.put("Class Scheduling", "PASS");

@@ -55,6 +55,8 @@ public class IHSM_ClassSchedule_SubjectHours extends BasePage {
 	private WebElement searchButton;
 
 	// Subject Hours Details
+	@FindBy(xpath = "//input[@type='search']")
+	private WebElement inputSearch;
 
 	@FindBy(xpath = "//table[@id='tblStudyPlan']//tbody//tr[3]//td[2]")
 	private WebElement actionEditButton;
@@ -191,6 +193,12 @@ public class IHSM_ClassSchedule_SubjectHours extends BasePage {
 		safeClick(searchButton);
 	}
 
+	public void inputSearch(String data) {
+		blinkElement(inputSearch);
+		safeClick(inputSearch);
+		inputSearch.sendKeys(data);
+	}
+
 	public void actionEditButton() {
 		blinkElement(actionEditButton);
 		safeClick(actionEditButton);
@@ -295,9 +303,10 @@ public class IHSM_ClassSchedule_SubjectHours extends BasePage {
 
 	// fill the subject hours information
 
-	public void fillSubjectHoursInformation(String session, String batch, int acadIdx, String semester, String crMarks,
-			String lecHours, String praHours, String stHours, String acHours, String lecHours2, String prHoursAcs,
-			String semiHours, String labHours, String facHours, String examType, String pMarks, String mxCtrlMark, String ePassMarks, String maxExamMarks) {
+	public void fillSubjectHoursInformation(String session, String batch, int acadIdx, String semester,
+			 String crMarks, String lecHours, String praHours, String stHours, String acHours,
+			String lecHours2, String prHoursAcs, String semiHours, String labHours, String facHours, String examType,
+			String pMarks, String mxCtrlMark, String ePassMarks, String maxExamMarks) {
 		coursePlannerTab();
 		subjectCredit();
 		subjectHours();
@@ -312,6 +321,7 @@ public class IHSM_ClassSchedule_SubjectHours extends BasePage {
 		searchButton();
 
 		// hours details
+//		inputSearch(inputData);
 		actionEditButton();
 		totalCreditHours(crMarks);
 		totalLecHours(lecHours);
@@ -331,6 +341,6 @@ public class IHSM_ClassSchedule_SubjectHours extends BasePage {
 		maxExamMarks(maxExamMarks);
 		saveButton();
 		okButtonPop();
-		
+
 	}
 }

@@ -99,16 +99,19 @@ public class IHSM_ManageExam extends BasePage {
 		safeClick(okButton);
 	}
 	
-	public void errorButton() {
+	public void handleErrorOrOkButton() {
 
-		try {
-			if (errorButton.isDisplayed()) {
-				blinkElement(errorButton);
-				safeClick(errorButton);
-			}
-		} catch (Exception e) {
-			e.getMessage();
-		}
+	    if (isElementVisible(errorButton)) {
+	        blinkElement(errorButton);
+	        safeClick(errorButton);
+
+	    } else if (isElementVisible(okButton)) {
+	        blinkElement(okButton);
+	        safeClick(okButton);
+
+	    } else {
+	        System.out.println("Neither Error nor OK button is visible");
+	    }
 	}
 
 	// fill the manage exam information
@@ -123,7 +126,7 @@ public class IHSM_ManageExam extends BasePage {
 		endDate(endDate);
 		saveButton();
 //		okButton();
-		errorButton();
+		handleErrorOrOkButton();
 
 	}
 }

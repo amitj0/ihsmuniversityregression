@@ -148,7 +148,7 @@ public class BasePage {
 		}
 	}
 
-	public boolean isElementPresent(WebElement element) {
+	public boolean isElementVisible(WebElement element) {
 		try {
 			element.isDisplayed();
 			return true;
@@ -773,6 +773,8 @@ public class BasePage {
 			throw new RuntimeException("Passport save confirmation failed", e);
 		}
 	}
+	
+	
 
 	// Utility method to capture screenshot
 	public static String captureScreenshot(String testName) throws IOException {

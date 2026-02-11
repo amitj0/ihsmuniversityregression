@@ -60,7 +60,7 @@ public class IHSM_ClassAttendanceTest extends BaseClass {
 
 		try {
 			List<Integer> attendanceValues = Arrays.asList(40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
-					40, 40);
+					40, 40,40,40,40,40);
 			IHSM_ClassAttendance classAttendance = new IHSM_ClassAttendance(getDriver());
 			classAttendance.fillClassAttendance2(1, 1, 3, "p", attendanceValues);
 			ExtentListener.getNode().pass("Class Attendance 2 added successfully");
