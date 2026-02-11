@@ -31,3 +31,5 @@ src/test/java/com/ihsm/university/testcases/flows/student/IHSM_DocumentsFullFlow
 src/test/java/com/ihsm/university/testcases/flows/student/StudentFullRegistrationDataProvider.java
 src/test/java/com/ihsm/university/testcases/flows/employee/IHSM_DesignationFullFlowTest.java
 src/test/java/com/ihsm/university/testcases/flows/employee/IHSM_DocumentFullFlowTest.java
+src/test/java/com/ihsm/university/testcases/flows/employee/IHSM_AcademicFullFlowTest.java
+src/test/java/com/ihsm/university/testcases/flows/student/IHSM_AcademicFullFlowTest.java
