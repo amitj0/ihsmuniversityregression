@@ -21,6 +21,7 @@ import java.time.temporal.ChronoField;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class BasePage {
 
@@ -773,8 +774,23 @@ public class BasePage {
 			throw new RuntimeException("Passport save confirmation failed", e);
 		}
 	}
-	
-	
+
+	public void switchToNewTab() {
+
+		String parentWindow = driver.getWindowHandle();
+
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+		wait.until(driver -> driver.getWindowHandles().size() > 1);
+
+		for (String window : driver.getWindowHandles()) {
+			if (!window.equals(parentWindow)) {
+				driver.switchTo().window(window);
+				break;
+			}
+		}
+
+		wait.until(ExpectedConditions.urlContains("Student"));
+	}
 
 	// Utility method to capture screenshot
 	public static String captureScreenshot(String testName) throws IOException {

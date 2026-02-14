@@ -7,57 +7,50 @@
 	</listeners>
 
 	<!-- Chrome Test -->
-	<test name="IHSM_UNIVERSITY_Chrome">
+	<test name="IHSM_UNIVERSITY_Chrome_Student">
 		<parameter name="os" value="windows" />
 		<parameter name="browser" value="chrome" />
 		<classes>
 
 			<!-- Student Registration Module -->
 			<class
-				name="com.ihsm.university.testcases.flows.student.IHSM_BasicFullFlowTest" />
+				name="com.ihsm.university.ihsmtestcases.flows.student.IHSM_BasicFullFlowTest2" />
 			<class
-				name="com.ihsm.university.testcases.flows.student.IHSM_DocumentFullFlowTest" />
+				name="com.ihsm.university.ihsmtestcases.flows.student.IHSM_DocumentFullFlowTest2" />
 			<class
-				name="com.ihsm.university.testcases.flows.student.IHSM_AcademicFullFlowTest" />
+				name="com.ihsm.university.ihsmtestcases.flows.student.IHSM_AcademicFullFlowTest2" />
 			<class
-				name="com.ihsm.university.testcases.flows.student.IHSM_StatusFullFlowTest" />
+				name="com.ihsm.university.ihsmtestcases.flows.student.IHSM_StatusFullFlowTest2" />
 
-			<!-- Employee Registration Module-->
+			<!-- Employee Registration Module -->
 			<class
-				name="com.ihsm.university.testcases.flows.employee.IHSM_BasicFullFlowTest" />
+				name="com.ihsm.university.ihsmtestcases.flows.employee.IHSM_BasicFullFlowTest" />
 			<class
-				name="com.ihsm.university.testcases.flows.employee.IHSM_DesignationFullFlowTest" />
+				name="com.ihsm.university.ihsmtestcases.flows.employee.IHSM_DesignationFullFlowTest" />
 			<class
-				name="com.ihsm.university.testcases.flows.employee.IHSM_ProfessionalInformationFlowTest" />
+				name="com.ihsm.university.ihsmtestcases.flows.employee.IHSM_ProfessionalInformationFlowTest" />
 			<class
-				name="com.ihsm.university.testcases.flows.employee.IHSM_DocumentFullFlowTest" />
+				name="com.ihsm.university.ihsmtestcases.flows.employee.IHSM_DocumentFullFlowTest" />
 
+			<!-- Class Scheduling -->
+			<!--<class
+				name="com.ihsm.university.ihsmtestcases.flows.classschedule.IHSM_ClassSubjectCreditTest" />
+			<class
+				name="com.ihsm.university.ihsmtestcases.flows.classschedule.IHSM_VerifyGroupAssignmentTest" />
+			<class
+				name="com.ihsm.university.ihsmtestcases.flows.classschedule.IHSM_ClassSchedulingInformationTest" />-->
 
-			<!--Class Scheduling Module-->
-			<class
-				name="com.ihsm.university.testcases.flows.classschedule.IHSM_ClassSubjectCreditTest" />
-			<class
-				name="com.ihsm.university.testcases.flows.classschedule.IHSM_VerifyGroupAssignment" />
-			<class
-				name="com.ihsm.university.testcases.flows.classschedule.IHSM_ClassSchedulingInformationTest" />
-
-			<!-- Exam Management-->
-			<class
-				name="com.ihsm.university.testcases.flows.exammanage.IHSM_ExamManage" />
+			<!-- Exam Management -->
+			<!--<class
+				name="com.ihsm.university.ihsmtestcases.flows.exammanage.IHSM_ExamManageTest" />-->
 
 		</classes>
 	</test>
 
-	<!-- Firefox Test (optional) -->
-
-	<!--<test name="IHSM_UNIVERSITY_Firefox" thread-count="3">
-		<parameter name="os" value="windows" />
-		<parameter name="browser" value="firefox" />
-		<classes>
-			<class
-				name="com.ihsm.university.testcases.workflow.IHSM_EmployeeRegistrationFullWorkFlow" />
-		</classes>
-	</test>-->
-
 
 </suite>
+
+
+
+
+

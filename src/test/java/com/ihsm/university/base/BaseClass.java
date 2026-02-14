@@ -12,8 +12,10 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
+import org.testng.SkipException;
 import org.testng.annotations.*;
 
 import com.aventstack.extentreports.ExtentReports;
@@ -23,7 +25,11 @@ import com.ihsm.university.utilities.ExtentListener;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -31,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 
 @Listeners(ExtentListener.class)
@@ -57,9 +64,33 @@ public class BaseClass {
 		return wait.get();
 	}
 
+	protected void saveCookiesToFile() throws IOException {
+		Set<Cookie> cookies = getDriver().manage().getCookies();
+		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("cookies.data"))) {
+			oos.writeObject(cookies);
+		}
+		logger.info("Cookies saved to file");
+	}
+
+	protected void loadCookiesFromFile() throws IOException, ClassNotFoundException {
+		File cookieFile = new File("cookies.data");
+		if (cookieFile.exists()) {
+			getDriver().get(prop.getProperty("url")); // Open base URL first
+			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(cookieFile))) {
+				Set<Cookie> cookies = (Set<Cookie>) ois.readObject();
+				for (Cookie cookie : cookies) {
+					getDriver().manage().addCookie(cookie);
+				}
+			}
+			getDriver().navigate().refresh();
+			logger.info("Cookies loaded from file");
+		}
+	}
+
 	// ================= LOAD CONFIG =================
 	@BeforeSuite(alwaysRun = true)
 	public void initConfig() {
+
 		try {
 			logger = LogManager.getLogger("BaseClass");
 
@@ -87,18 +118,52 @@ public class BaseClass {
 			throw new RuntimeException("❌ 'password' is missing in config.properties");
 	}
 
+	protected void checkServerAvailability() {
+		try {
+			// Use base URL from properties
+			String baseUrl = prop.getProperty("url");
+			if (baseUrl.contains("#")) {
+				baseUrl = baseUrl.split("#")[0]; // remove fragment for health check
+			}
+
+			URL url = new URL(baseUrl);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setConnectTimeout(30000); // 30 sec timeout
+			connection.connect();
+			int code = connection.getResponseCode();
+
+			if (code != 200) {
+				logger.warn("Server not ready. Status code: " + code);
+				throw new SkipException("Server health check failed. Status code: " + code);
+			} else {
+				logger.info("Server is reachable. Status code: " + code);
+			}
+
+		} catch (SkipException se) {
+			throw se; // skip gracefully
+		} catch (Exception e) {
+			logger.warn("Server is not reachable: " + e.getMessage());
+			throw new SkipException("Server is not reachable: " + e.getMessage());
+		}
+	}
+
 	// ================= BEFORE EACH TEST =================
 	@Parameters({ "browser" })
 	@BeforeClass(alwaysRun = true)
 	public void beforeEachTest(@Optional("chrome") String browser) {
 
+		checkServerAvailability();
+
 		if (sharedDriver == null) {
-			// First class running: create the driver
+
 			boolean seleniumGrid = Boolean.parseBoolean(prop.getProperty("seleniumGrid", "false"));
 			boolean headless = Boolean.parseBoolean(prop.getProperty("headless", "false"));
 			String gridUrl = prop.getProperty("gridURL");
 
 			try {
+
+				// ===== DRIVER CREATION =====
 				if (seleniumGrid) {
 					logger.info("Running on Selenium Grid");
 					sharedDriver = getGridDriver(browser, headless, gridUrl);
@@ -110,18 +175,54 @@ public class BaseClass {
 				driver.set(sharedDriver);
 				wait.set(new WebDriverWait(sharedDriver, Duration.ofSeconds(10)));
 
-				// Set faster timeouts
 				sharedDriver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
 				sharedDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
 				sharedDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(30));
-				sharedDriver.manage().deleteAllCookies();
 
 				sharedDriver.get(prop.getProperty("url"));
 				logger.info("Navigated to URL: " + prop.getProperty("url"));
 
-				loginPage = new LoginPage(sharedDriver);
-				loginPage.login(prop.getProperty("username"), prop.getProperty("password"));
-				logger.info("Logged in successfully with shared driver");
+				// ===== SESSION REUSE LOGIC =====
+				boolean loggedIn = false;
+
+				try {
+					loadCookiesFromFile();
+					logger.info("Attempted to reuse login session from cookies");
+
+					// Validate login by checking URL
+					try {
+						// Example: check logout button exists
+						WebDriverWait shortWait = new WebDriverWait(sharedDriver, Duration.ofSeconds(5));
+
+						shortWait.until(ExpectedConditions
+								.visibilityOfElementLocated(By.xpath("//a[contains(text(),'Sign Out')]")));
+
+						loggedIn = true;
+						logger.info("Session reused successfully.");
+
+					} catch (Exception e) {
+						logger.info("Session not valid. Login required.");
+					}
+
+				} catch (Exception e) {
+					logger.info("Cookie loading failed. Will perform fresh login.");
+				}
+
+				// ===== FRESH LOGIN IF NEEDED =====
+				if (!loggedIn) {
+
+					logger.info("Performing fresh login...");
+
+					loginPage = new LoginPage(sharedDriver);
+					loginPage.login(prop.getProperty("username"), prop.getProperty("password"));
+
+					try {
+						saveCookiesToFile();
+						logger.info("Cookies saved successfully.");
+					} catch (IOException ioException) {
+						logger.warn("Failed to save cookies: " + ioException.getMessage());
+					}
+				}
 
 			} catch (Exception e) {
 				logger.error("❌ Setup failed. Aborting test.", e);
@@ -129,10 +230,11 @@ public class BaseClass {
 			}
 
 		} else {
-			// Reuse existing driver
+
 			driver.set(sharedDriver);
 			wait.set(new WebDriverWait(sharedDriver, Duration.ofSeconds(10)));
 			logger.info("Reusing shared driver");
+
 		}
 	}
 
@@ -246,7 +348,7 @@ public class BaseClass {
 	}
 
 	// ================= AFTER EACH TEST =================
-	@AfterClass(alwaysRun = true)
+	@AfterClass(alwaysRun = false)
 	public void tearDown() {
 		if (getDriver() != null) {
 
@@ -255,7 +357,7 @@ public class BaseClass {
 		}
 	}
 
-	@AfterSuite(alwaysRun = true)
+	@AfterSuite(alwaysRun = false)
 	public void afterSuite() {
 		if (sharedDriver != null) {
 			sharedDriver.quit();
@@ -268,22 +370,20 @@ public class BaseClass {
 	@AfterMethod(alwaysRun = true)
 	public void cleanUpAfterEachTest(ITestResult result) {
 
-	    // Refresh ONLY if test failed or skipped
-	    if (result.getStatus() == ITestResult.FAILURE ||
-	        result.getStatus() == ITestResult.SKIP) {
+		// Refresh ONLY if test failed or skipped
+		if (result.getStatus() == ITestResult.FAILURE || result.getStatus() == ITestResult.SKIP) {
 
-	        try {
-	            System.out.println("Test failed/skipped → cleaning up");
+			try {
+				System.out.println("Test failed/skipped → cleaning up");
 
-	            getDriver().switchTo().defaultContent();
-	            getDriver().navigate().refresh();
+				getDriver().switchTo().defaultContent();
+				getDriver().navigate().refresh();
 
-	        } catch (Exception e) {
-	            System.out.println("Cleanup failed: " + e.getMessage());
-	        }
-	    }
+			} catch (Exception e) {
+				System.out.println("Cleanup failed: " + e.getMessage());
+			}
+		}
 	}
-
 
 	// ================= SCREENSHOT =================
 	public static String captureScreenshot(String testName) throws IOException {

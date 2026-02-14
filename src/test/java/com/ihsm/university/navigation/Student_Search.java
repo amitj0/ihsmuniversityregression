@@ -1,8 +1,13 @@
 package com.ihsm.university.navigation;
 
+import java.time.Duration;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.ihsm.university.base.BasePage;
 
@@ -13,7 +18,7 @@ public class Student_Search extends BasePage {
 	}
 
 	// locate the web elements here
-	@FindBy(xpath = "//a[@id='a3']")
+	@FindBy(xpath = "//span[normalize-space()='Student']")
 	private WebElement studentSearchMenu;
 
 	@FindBy(xpath = "//a[@href='#/Student/SearchStudents']")
@@ -25,8 +30,8 @@ public class Student_Search extends BasePage {
 	@FindBy(xpath = "//div[@class='card-footer']//button[normalize-space()='Search']")
 	private WebElement searchButton;
 
-	@FindBy(xpath = "(//table[@id='tblStudentInfo']//tbody//td)[7]")
-	private WebElement studentEnrollnmentNumber;
+	@FindBy(xpath = "//table[@id='tblStudentInfo']//tr//td[8]/a")
+	private WebElement studentNameField;
 
 	// methods to perform the action
 	public void studentSearchMenu() {
@@ -40,6 +45,7 @@ public class Student_Search extends BasePage {
 	}
 
 	public void enterStudentDetails(String details) {
+		blinkElement(studentSearchField);
 		studentSearchField.sendKeys(details);
 	}
 
@@ -48,18 +54,51 @@ public class Student_Search extends BasePage {
 		safeClick(searchButton);
 	}
 
-	public String getStudentEnrollmentNumber() {
-		blinkElementToVerify(studentEnrollnmentNumber);
-		String enroll = studentEnrollnmentNumber.getText();
-		return enroll;
+	public void clickFirstStudentRow() {
+
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+		By studentLocator = By.xpath("//table[@id='tblStudentInfo']//tbody//tr[1]//td[8]//a");
+
+		wait.until(ExpectedConditions.elementToBeClickable(studentLocator));
+
+		WebElement student = driver.findElement(studentLocator);
+
+		blinkElement(student);
+		safeClick(student);
 	}
 
 	// fill student search info here
 	public void fillStudentSearchInfo(String details) {
-		studentSearchMenu();
-		searchStudentsSubMenu();
-		enterStudentDetails(details);
-		clickSearchButton();
+
+	    studentSearchMenu();
+	    searchStudentsSubMenu();
+
+	    studentSearchField.clear();
+	    enterStudentDetails(details);
+
+	    clickSearchButton();
+
+	    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+
+	    // Wait for table row to appear
+	    By rowLocator = By.xpath("//table[@id='tblStudentInfo']//tbody//tr");
+	    wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(rowLocator, 0));
+
+	    // Wait for student link clickable
+	    By studentLinkLocator = By.xpath("//table[@id='tblStudentInfo']//tbody//tr[1]//td[8]//a");
+
+	    WebElement student = wait.until(ExpectedConditions.elementToBeClickable(studentLinkLocator));
+
+	    // Scroll to element (VERY IMPORTANT)
+	    scrollToElement(student);
+
+	    // Click using JavaScript (MOST RELIABLE)
+	    jsClick(student);
+
+	    // Switch tab
+	    switchToNewTab();
 	}
+
 
 }
