@@ -49,7 +49,7 @@
 				<version>3.5.1</version>
 				<configuration>
 					<suiteXmlFiles>
-						<suiteXmlFile>master.xml</suiteXmlFile>
+						<suiteXmlFile>testng.xml</suiteXmlFile>
 					</suiteXmlFiles>
 				</configuration>
 			</plugin>
